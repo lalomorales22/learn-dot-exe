@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { BookOpen, Zap, Brain, Clock, Target, Code, Atom, Calculator, Dna, Globe, Microscope, Send, Bot, User, Edit3, Download, Eye, Database, Folder } from 'lucide-react';
+import { BookOpen, Zap, Brain, Clock, Target, Code, Atom, Calculator, Dna, Globe, Microscope, Send, Bot, User, Edit3, Download, Eye, Database, Folder, Settings } from 'lucide-react';
 import { claudeService } from './services/claudeService';
 import { CourseGenerator } from './services/courseGenerator';
 import { CourseInput, CourseStructure, ChatMessage } from './types/course';
@@ -26,6 +26,7 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [courseFiles, setCourseFiles] = useState<Blob | null>(null);
   const [isCreatingFiles, setIsCreatingFiles] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -204,11 +205,40 @@ function App() {
     claudeService.resetConversation();
   };
 
+  // Debug Panel Component
+  const DebugPanel = () => (
+    <div className="fixed top-4 left-4 bg-gray-900 border-2 border-yellow-400 p-4 text-xs font-mono z-50 max-w-md">
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-yellow-400 font-bold">🔧 DEBUG INFO</h3>
+        <button 
+          onClick={() => setShowDebug(false)}
+          className="text-white hover:text-red-400"
+        >
+          ✕
+        </button>
+      </div>
+      <div className="space-y-1 text-gray-300">
+        <div><span className="text-blue-400">Environment:</span> {import.meta.env.MODE}</div>
+        <div><span className="text-blue-400">Has API Key:</span> {!!import.meta.env.VITE_GROQ_API_KEY ? 'Yes' : 'No'}</div>
+        <div><span className="text-blue-400">Key Length:</span> {import.meta.env.VITE_GROQ_API_KEY?.length || 0}</div>
+        <div><span className="text-blue-400">Key Start:</span> {import.meta.env.VITE_GROQ_API_KEY ? import.meta.env.VITE_GROQ_API_KEY.substring(0, 8) + '...' : 'none'}</div>
+        <div><span className="text-blue-400">All Env Keys:</span></div>
+        <div className="text-xs text-gray-400 max-h-20 overflow-y-auto">
+          {Object.keys(import.meta.env).map(key => (
+            <div key={key}>• {key}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   // Chat Interface
   if (step === 'chat') {
     return (
       <div className="min-h-screen bg-black text-white relative">
         <div className="scanlines"></div>
+        
+        {showDebug && <DebugPanel />}
         
         {/* Header */}
         <div className="border-b-2 border-blue-500 bg-gray-900 p-4">
@@ -218,6 +248,13 @@ function App() {
               <h1 className="text-4xl font-bold font-mono text-blue-400">
                 LEARN.EXE
               </h1>
+              <button
+                onClick={() => setShowDebug(!showDebug)}
+                className="ml-4 p-2 text-gray-400 hover:text-yellow-400 transition-colors"
+                title="Toggle Debug Info"
+              >
+                <Settings className="w-5 h-5" />
+              </button>
             </div>
             <p className="text-lg text-gray-300 font-mono mb-1">
               AI-POWERED COURSE BUILDER

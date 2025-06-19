@@ -48,10 +48,22 @@ When ready to analyze a course request, respond with a JSON object containing:
 
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
-// Simple API key getter
+// Enhanced API key getter with debugging
 const getApiKey = (): string => {
-  // In Vite, environment variables are available via import.meta.env
-  return import.meta.env.VITE_GROQ_API_KEY || '';
+  // Check multiple possible sources
+  const apiKey = import.meta.env.VITE_GROQ_API_KEY || 
+                 (window as any).ENV?.VITE_GROQ_API_KEY || 
+                 '';
+  
+  // Debug logging (remove in production)
+  console.log('Environment check:', {
+    hasViteEnv: !!import.meta.env.VITE_GROQ_API_KEY,
+    envKeys: Object.keys(import.meta.env),
+    apiKeyLength: apiKey ? apiKey.length : 0,
+    apiKeyStart: apiKey ? apiKey.substring(0, 8) + '...' : 'none'
+  });
+  
+  return apiKey;
 };
 
 export class ClaudeService {
@@ -60,19 +72,23 @@ export class ClaudeService {
   async sendMessage(userMessage: string): Promise<string> {
     const GROQ_API_KEY = getApiKey();
     
-    // Simple validation
-    if (!GROQ_API_KEY || GROQ_API_KEY.trim() === '') {
+    // Enhanced validation with debugging
+    if (!GROQ_API_KEY || GROQ_API_KEY.trim() === '' || GROQ_API_KEY === 'your_groq_api_key_here') {
       return `🔑 **API Key Required**
 
-To use the AI course designer, you need to add your Groq API key:
+**Debug Info:**
+- Environment: ${import.meta.env.MODE}
+- Has API Key: ${!!GROQ_API_KEY}
+- Key Length: ${GROQ_API_KEY ? GROQ_API_KEY.length : 0}
 
 **For Netlify Deployment:**
 1. Go to your Netlify site dashboard
 2. Navigate to "Site settings" → "Environment variables"
 3. Add a new variable:
    - **Key:** \`VITE_GROQ_API_KEY\`
-   - **Value:** Your actual Groq API key
-4. Redeploy your site
+   - **Value:** Your actual Groq API key (starts with 'gsk_')
+4. **Important:** Trigger a new deploy after adding the variable
+5. Check the deploy logs to ensure the variable is set
 
 **For Local Development:**
 1. Create a \`.env\` file in the project root
@@ -80,6 +96,11 @@ To use the AI course designer, you need to add your Groq API key:
 3. Restart the development server
 
 **Get your free API key:** [https://console.groq.com/](https://console.groq.com/)
+
+**Troubleshooting:**
+- Make sure the variable name is exactly: \`VITE_GROQ_API_KEY\`
+- Ensure you triggered a new deployment after adding the variable
+- Check Netlify deploy logs for environment variable confirmation
 
 Once configured, I'll be able to help you design amazing courses! 🚀`;
     }
@@ -155,7 +176,7 @@ Once configured, I'll be able to help you design amazing courses! 🚀`;
   async generateCourseStructure(courseInput: any): Promise<any> {
     const GROQ_API_KEY = getApiKey();
     
-    if (!GROQ_API_KEY || GROQ_API_KEY.trim() === '') {
+    if (!GROQ_API_KEY || GROQ_API_KEY.trim() === '' || GROQ_API_KEY === 'your_groq_api_key_here') {
       throw new Error('API key not configured. Please add your Groq API key to environment variables.');
     }
 
