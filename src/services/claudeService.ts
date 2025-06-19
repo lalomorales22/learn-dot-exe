@@ -49,7 +49,7 @@ When ready to analyze a course request, respond with a JSON object containing:
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
 // You'll need to replace this with your actual Groq API key
-const GROQ_API_KEY = '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';
+const GROQ_API_KEY = 'enter_groq_api_here';
 
 export class ClaudeService {
   private messages: GroqMessage[] = [];
