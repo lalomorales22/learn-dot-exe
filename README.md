@@ -1,10 +1,10 @@
 # LEARN.EXE 🎮
+![Screenshot 2025-06-19 at 4 22 59 PM](https://github.com/user-attachments/assets/7bc9f659-48ae-4fd5-a493-5c6f80c9e6e3)
 
 **AI-Powered Course Builder with Retro 8-Bit Design**
 
 A modern learning application that combines the power of AI with nostalgic 8-bit aesthetics to create personalized, interactive learning experiences. Build comprehensive courses with AI tutoring capabilities that run locally on users' machines.
 
-![LEARN.EXE Screenshot](https://via.placeholder.com/800x400/000000/00ff00?text=LEARN.EXE+AI+COURSE+BUILDER)
 
 ## 🚀 Features
 
