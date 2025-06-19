@@ -5,13 +5,15 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   define: {
-    // Ensure environment variables are available at build time
-    'import.meta.env.VITE_GROQ_API_KEY': JSON.stringify(process.env.VITE_GROQ_API_KEY || ''),
+    // Explicitly define environment variables for production builds
+    __VITE_GROQ_API_KEY__: JSON.stringify(process.env.VITE_GROQ_API_KEY || ''),
   },
+  envPrefix: 'VITE_',
   build: {
-    // Ensure environment variables are included in the build
     rollupOptions: {
-      external: [],
+      output: {
+        manualChunks: undefined,
+      },
     },
   },
 })

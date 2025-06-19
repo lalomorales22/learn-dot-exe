@@ -48,15 +48,33 @@ When ready to analyze a course request, respond with a JSON object containing:
 
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
-// Get API key from environment variables with fallback check
-const getApiKey = () => {
-  // Try different ways to access the environment variable
-  const key = import.meta.env?.VITE_GROQ_API_KEY || 
-              (typeof process !== 'undefined' && process.env?.VITE_GROQ_API_KEY) ||
-              (window as any).__GROQ_API_KEY__;
+// Get API key from multiple sources with better error handling
+const getApiKey = (): string => {
+  // Try Vite's import.meta.env first
+  if (typeof import.meta !== 'undefined' && import.meta.env?.VITE_GROQ_API_KEY) {
+    return import.meta.env.VITE_GROQ_API_KEY;
+  }
   
-  return key;
+  // Try the build-time defined variable
+  if (typeof __VITE_GROQ_API_KEY__ !== 'undefined' && __VITE_GROQ_API_KEY__) {
+    return __VITE_GROQ_API_KEY__;
+  }
+  
+  // Try process.env for Node.js environments
+  if (typeof process !== 'undefined' && process.env?.VITE_GROQ_API_KEY) {
+    return process.env.VITE_GROQ_API_KEY;
+  }
+  
+  // Try window global for runtime injection
+  if (typeof window !== 'undefined' && (window as any).__GROQ_API_KEY__) {
+    return (window as any).__GROQ_API_KEY__;
+  }
+  
+  return '';
 };
+
+// Declare the global variable for TypeScript
+declare const __VITE_GROQ_API_KEY__: string;
 
 export class ClaudeService {
   private messages: GroqMessage[] = [];
@@ -64,27 +82,49 @@ export class ClaudeService {
   async sendMessage(userMessage: string): Promise<string> {
     const GROQ_API_KEY = getApiKey();
     
-    // Check if API key is available
-    if (!GROQ_API_KEY || GROQ_API_KEY === 'your_groq_api_key_here' || GROQ_API_KEY === 'enter_groq_api_here') {
+    // Enhanced API key validation
+    if (!GROQ_API_KEY || 
+        GROQ_API_KEY === 'your_groq_api_key_here' || 
+        GROQ_API_KEY === 'enter_groq_api_here' ||
+        GROQ_API_KEY === '' ||
+        GROQ_API_KEY === 'undefined') {
+      
+      const debugInfo = {
+        hasImportMeta: typeof import.meta !== 'undefined',
+        hasViteEnv: typeof import.meta !== 'undefined' && !!import.meta.env,
+        viteApiKey: typeof import.meta !== 'undefined' ? import.meta.env?.VITE_GROQ_API_KEY : 'N/A',
+        buildTimeKey: typeof __VITE_GROQ_API_KEY__ !== 'undefined' ? __VITE_GROQ_API_KEY__ : 'N/A',
+        processEnv: typeof process !== 'undefined' ? process.env?.VITE_GROQ_API_KEY : 'N/A',
+        windowGlobal: typeof window !== 'undefined' ? (window as any).__GROQ_API_KEY__ : 'N/A'
+      };
+      
       return `🔑 **API Key Required**
 
 To use the AI course designer, you need to add your Groq API key:
 
-**For Development:**
+**For Netlify Deployment:**
+1. Go to your Netlify site dashboard
+2. Navigate to "Site settings" → "Environment variables"
+3. Add a new variable:
+   - **Key:** \`VITE_GROQ_API_KEY\`
+   - **Value:** Your actual Groq API key
+4. Redeploy your site (trigger a new deploy)
+
+**For Local Development:**
 1. Create a \`.env\` file in the project root
 2. Add: \`VITE_GROQ_API_KEY=your_actual_groq_api_key_here\`
 3. Restart the development server
 
-**For Deployment:**
-1. Get your API key from [Groq Console](https://console.groq.com/)
-2. Add it as an environment variable in your deployment platform
-3. Set the variable name as: \`VITE_GROQ_API_KEY\`
-
 **Get your free API key:** [https://console.groq.com/](https://console.groq.com/)
 
-**Debug Info:** API Key Status: ${GROQ_API_KEY ? 'Found but invalid' : 'Not found'}
+**Debug Info:** 
+- Environment: ${typeof window !== 'undefined' ? 'Browser' : 'Server'}
+- API Key Found: ${!!GROQ_API_KEY}
+- Key Value: ${GROQ_API_KEY ? GROQ_API_KEY.substring(0, 8) + '...' : 'None'}
 
-Once configured, I'll be able to help you design amazing courses! 🚀`;
+${JSON.stringify(debugInfo, null, 2)}
+
+Once configured properly, I'll be able to help you design amazing courses! 🚀`;
     }
 
     this.messages.push({ role: 'user', content: userMessage });
@@ -158,7 +198,11 @@ Once configured, I'll be able to help you design amazing courses! 🚀`;
   async generateCourseStructure(courseInput: any): Promise<any> {
     const GROQ_API_KEY = getApiKey();
     
-    if (!GROQ_API_KEY || GROQ_API_KEY === 'your_groq_api_key_here' || GROQ_API_KEY === 'enter_groq_api_here') {
+    if (!GROQ_API_KEY || 
+        GROQ_API_KEY === 'your_groq_api_key_here' || 
+        GROQ_API_KEY === 'enter_groq_api_here' ||
+        GROQ_API_KEY === '' ||
+        GROQ_API_KEY === 'undefined') {
       throw new Error('API key not configured. Please add your Groq API key to environment variables.');
     }
 
