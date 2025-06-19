@@ -48,15 +48,15 @@ When ready to analyze a course request, respond with a JSON object containing:
 
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
-// Get API key from environment variables
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+// Get API key from environment variables with fallback
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
 
 export class ClaudeService {
   private messages: GroqMessage[] = [];
 
   async sendMessage(userMessage: string): Promise<string> {
     // Check if API key is available
-    if (!GROQ_API_KEY || GROQ_API_KEY === 'enter_groq_api_here') {
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'your_groq_api_key_here' || GROQ_API_KEY === 'enter_groq_api_here') {
       return `🔑 **API Key Required**
 
 To use the AI course designer, you need to add your Groq API key:
@@ -145,7 +145,7 @@ Once configured, I'll be able to help you design amazing courses! 🚀`;
   }
 
   async generateCourseStructure(courseInput: any): Promise<any> {
-    if (!GROQ_API_KEY || GROQ_API_KEY === 'enter_groq_api_here') {
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'your_groq_api_key_here' || GROQ_API_KEY === 'enter_groq_api_here') {
       throw new Error('API key not configured. Please add your Groq API key to environment variables.');
     }
 
