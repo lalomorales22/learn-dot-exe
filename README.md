@@ -1,5 +1,5 @@
 # LEARN.EXE 🎮
-![Screenshot 2025-06-19 at 4 22 59 PM](https://github.com/user-attachments/assets/7bc9f659-48ae-4fd5-a493-5c6f80c9e6e3)
+![Screenshot 2025-06-19 at 4 22 59 PM](https://github.com/user-attachments/assets/7bc9f659-48ae-4fd5-a493-5c6f80c9e6e3)
 
 **AI-Powered Course Builder with Retro 8-Bit Design**
 
@@ -41,7 +41,7 @@ A modern learning application that combines the power of AI with nostalgic 8-bit
 
 - Node.js 18+ 
 - npm or yarn
-- Groq API key
+- Groq API key (free at [console.groq.com](https://console.groq.com/))
 
 ### Installation
 
@@ -58,10 +58,17 @@ A modern learning application that combines the power of AI with nostalgic 8-bit
 
 3. **Set up your Groq API key**
    
-   Edit `src/services/claudeService.ts` and replace the API key:
-   ```typescript
-   const GROQ_API_KEY = 'your-groq-api-key-here';
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
    ```
+   
+   Edit `.env` and add your Groq API key:
+   ```env
+   VITE_GROQ_API_KEY=your_actual_groq_api_key_here
+   ```
+   
+   Get your free API key at: [https://console.groq.com/](https://console.groq.com/)
 
 4. **Start the development server**
    ```bash
@@ -71,6 +78,30 @@ A modern learning application that combines the power of AI with nostalgic 8-bit
 5. **Open your browser**
    
    Navigate to `http://localhost:5173`
+
+## 🔐 Secure Deployment
+
+### Option 1: Environment Variables (Recommended)
+
+**For Netlify:**
+1. Go to your site settings in Netlify
+2. Navigate to "Environment variables"
+3. Add: `VITE_GROQ_API_KEY` with your API key value
+4. Redeploy your site
+
+**For Vercel:**
+1. Go to your project settings in Vercel
+2. Navigate to "Environment Variables"
+3. Add: `VITE_GROQ_API_KEY` with your API key value
+4. Redeploy your project
+
+**For other platforms:**
+- Add `VITE_GROQ_API_KEY` as an environment variable
+- The app will automatically use it without exposing it in your code
+
+### Option 2: Runtime Configuration
+
+The app gracefully handles missing API keys by showing setup instructions to users, so you can deploy without the key and let users add their own.
 
 ## 🎮 Usage
 
@@ -148,14 +179,14 @@ LEARN.EXE embraces a retro 8-bit aesthetic that makes learning feel like an adve
 
 ## 🔧 Configuration
 
-### Groq API Setup
+### Environment Variables
 
-1. Get your API key from [Groq Console](https://console.groq.com/)
-2. Replace the key in `src/services/claudeService.ts`
-3. The app uses the Qwen3-32B model with these parameters:
-   - Temperature: 0.6
-   - Max tokens: 4096
-   - Top-p: 0.95
+Create a `.env` file in the project root:
+
+```env
+# Required: Groq API key for AI functionality
+VITE_GROQ_API_KEY=your_groq_api_key_here
+```
 
 ### Customization
 
@@ -177,8 +208,9 @@ learn-dot-exe/
 │   ├── index.css               # Retro styling and animations
 │   └── main.tsx                # Application entry point
 ├── public/                     # Static assets
-├── index.html                  # HTML template
-└── README.md                   # This file
+├── .env.example               # Environment variables template
+├── index.html                 # HTML template
+└── README.md                  # This file
 ```
 
 ## 🚀 Deployment
@@ -189,11 +221,21 @@ learn-dot-exe/
 npm run build
 ```
 
-### Deploy to Netlify/Vercel
+### Deploy to Netlify
 
-1. Build the project
-2. Deploy the `dist` folder
-3. Set environment variables for your Groq API key (recommended for production)
+1. **Connect to GitHub**: Link your repository to Netlify
+2. **Set Environment Variables**: Add `VITE_GROQ_API_KEY` in site settings
+3. **Deploy**: Netlify will automatically build and deploy
+
+### Deploy to Vercel
+
+1. **Connect to GitHub**: Import your repository to Vercel
+2. **Set Environment Variables**: Add `VITE_GROQ_API_KEY` in project settings
+3. **Deploy**: Vercel will automatically build and deploy
+
+### Other Platforms
+
+Most platforms support environment variables. Add `VITE_GROQ_API_KEY` to your deployment environment.
 
 ## 🎯 Generated Course Structure
 
@@ -273,6 +315,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🎬 Demo
 
-Try the live demo: [LEARN.EXE Demo](https://learn-dot-exe.netlify.app)
+Try the live demo: [LEARN.EXE Demo](https://marvelous-puffpuff-2b3ce0.netlify.app)
 
 Create your first AI-powered course in minutes!

@@ -48,13 +48,34 @@ When ready to analyze a course request, respond with a JSON object containing:
 
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
-// You'll need to replace this with your actual Groq API key
-const GROQ_API_KEY = 'enter_groq_api_here';
+// Get API key from environment variables
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 export class ClaudeService {
   private messages: GroqMessage[] = [];
 
   async sendMessage(userMessage: string): Promise<string> {
+    // Check if API key is available
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'enter_groq_api_here') {
+      return `🔑 **API Key Required**
+
+To use the AI course designer, you need to add your Groq API key:
+
+**For Development:**
+1. Create a \`.env\` file in the project root
+2. Add: \`VITE_GROQ_API_KEY=your_actual_groq_api_key_here\`
+3. Restart the development server
+
+**For Deployment:**
+1. Get your API key from [Groq Console](https://console.groq.com/)
+2. Add it as an environment variable in your deployment platform
+3. Set the variable name as: \`VITE_GROQ_API_KEY\`
+
+**Get your free API key:** [https://console.groq.com/](https://console.groq.com/)
+
+Once configured, I'll be able to help you design amazing courses! 🚀`;
+    }
+
     this.messages.push({ role: 'user', content: userMessage });
 
     try {
@@ -76,7 +97,7 @@ export class ClaudeService {
           temperature: 0.6,
           max_tokens: 4096,
           top_p: 0.95,
-          stream: false, // Using non-streaming for simplicity
+          stream: false,
           stop: null
         })
       });
@@ -96,6 +117,9 @@ export class ClaudeService {
       if (error instanceof Error) {
         if (error.message.includes('Failed to fetch')) {
           return 'I\'m having trouble connecting to the AI service. Please check your API key and network connection.';
+        }
+        if (error.message.includes('401')) {
+          return 'Invalid API key. Please check your Groq API key in the environment variables.';
         }
         return `I encountered an error: ${error.message}. Please try again.`;
       }
@@ -121,6 +145,10 @@ export class ClaudeService {
   }
 
   async generateCourseStructure(courseInput: any): Promise<any> {
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'enter_groq_api_here') {
+      throw new Error('API key not configured. Please add your Groq API key to environment variables.');
+    }
+
     const prompt = `Generate a comprehensive course structure for: ${courseInput.subject}
 
 Learning Objectives: ${courseInput.objectives}
