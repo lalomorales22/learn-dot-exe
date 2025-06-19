@@ -48,8 +48,8 @@ When ready to analyze a course request, respond with a JSON object containing:
 
 IMPORTANT: Only provide the JSON analysis when you have enough information to create a meaningful course. Otherwise, continue the conversation to gather more details.`;
 
-// Get API key from environment variables with fallback
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || process.env.VITE_GROQ_API_KEY;
+// Get API key from environment variables
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 export class ClaudeService {
   private messages: GroqMessage[] = [];
